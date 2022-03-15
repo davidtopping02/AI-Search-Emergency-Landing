@@ -46,5 +46,5 @@ class FlightApi:
         self.current_aircraft.altitude = api_response['response'][0]['alt']
 
         # prints entire contents of json call
-        # print(json.dumps(api_response, indent=4, sort_keys=True))
+        print(json.dumps(api_response, indent=4, sort_keys=True))
         return self.current_aircraft
