@@ -1,15 +1,12 @@
 from apiInterfaces import *
-from search import *
+from aviationDataStructures import *
+from searchDataStructures import *
 
-# creating new aircraft with flight number
-flight_number = '3V812'
-testAircraft = Aircraft(flight_number)
+the_aircraft = Aircraft('DP6531')
+flight_api_interface = FlightApi(the_aircraft)
+the_aircraft = flight_api_interface.get_data_from_api()
 
-# creating new flight api interface
-flight_api_interface = FlightApi(testAircraft)
-
-# calling function to get required flight data from the api
-testAircraft = flight_api_interface.get_data_from_api()
-
-# printing the flight data to console
-testAircraft.print_aircraft()
+if the_aircraft is not None:
+    emergency_landing = EmergencyLandingProblem(the_aircraft)
+else:
+    print("error retrieving aircraft data")

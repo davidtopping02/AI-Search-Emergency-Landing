@@ -11,12 +11,17 @@ class Aircraft:
 
     # Helper function to print out all fields of an aircraft object
     def print_aircraft(self):
-        print("Flight number: " + self.flight_number)
-        print("Departure airport:" + self.departure_airport)
-        print("Arrival airport: "+ self.arrival_airport)
-        print("Altitude: " + str(self.altitude))
-        print("Longitude: " + str(self.longitude))
-        print("Latitude: " + str(self.latitude))
-        print("Current Speed: " + str(self.current_speed))
+
+        if self.departure_airport is not None:
+            print("Flight number: " + self.flight_number)
+            print("Departure airport:" + self.departure_airport)
+            print("Arrival airport: "+ self.arrival_airport)
+            print("Altitude: " + str(self.altitude))
+            print("Longitude: " + str(self.longitude))
+            print("Latitude: " + str(self.latitude))
+            print("Current Speed: " + str(self.current_speed))
+        else:
+            return
 
 
+# class Airport:
