@@ -1,47 +1,22 @@
-import sys
-from collections import deque
+# This class gives the structure and suitable function for an aircraft object
+class Aircraft:
+    def __init__(self, flight_num=None,  arrival_airport=None,  depart_airport=None, longitude=None, latitude=None, altitude=None, current_speed=None):
+        self.flight_number = flight_num
+        self.departure_airport = depart_airport
+        self.arrival_airport = arrival_airport
+        self.altitude = altitude
+        self.longitude = longitude
+        self.latitude = latitude
+        self.current_speed = current_speed
 
-from utils import *
+    # Helper function to print out all fields of an aircraft object
+    def print_aircraft(self):
+        print("Flight number: " + self.flight_number)
+        print("Departure airport:" + self.departure_airport)
+        print("Arrival airport: "+ self.arrival_airport)
+        print("Altitude: " + str(self.altitude))
+        print("Longitude: " + str(self.longitude))
+        print("Latitude: " + str(self.latitude))
+        print("Current Speed: " + str(self.current_speed))
 
-class Problem:
 
-    def __init__(self, initial, goal=None):
-
-        self.initial = initial
-        self.goal = goal
-
-    def actions(self, state):
-        """Return the actions that can be executed in the given
-        state. The result would typically be a list, but if there are
-        many actions, consider yielding them one at a time in an
-        iterator, rather than building them all at once."""
-        raise NotImplementedError
-
-    def result(self, state, action):
-        """Return the state that results from executing the given
-        action in the given state. The action must be one of
-        self.actions(state)."""
-        raise NotImplementedError
-
-    def goal_test(self, state):
-        """Return True if the state is a goal. The default method compares the
-        state to self.goal or checks for state in self.goal if it is a
-        list, as specified in the constructor. Override this method if
-        checking against a single self.goal is not enough."""
-        if isinstance(self.goal, list):
-            return is_in(state, self.goal)
-        else:
-            return state == self.goal
-
-    def path_cost(self, c, state1, action, state2):
-        """Return the cost of a solution path that arrives at state2 from
-        state1 via action, assuming cost c to get up to state1. If the problem
-        is such that the path doesn't matter, this function will only look at
-        state2. If the path does matter, it will consider c and maybe state1
-        and action. The default method costs 1 for every step in the path."""
-        return c + 1
-
-    def value(self, state):
-        """For optimization problems, each state has a value. Hill Climbing
-        and related algorithms try to maximize this value."""
-        raise NotImplementedError

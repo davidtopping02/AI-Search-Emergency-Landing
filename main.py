@@ -1,16 +1,15 @@
-# This is a sample Python script.
+from apiInterfaces import *
+from search import *
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+# creating new aircraft with flight number
+flight_number = '3V812'
+testAircraft = Aircraft(flight_number)
 
+# creating new flight api interface
+flight_api_interface = FlightApi(testAircraft)
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+# calling function to get required flight data from the api
+testAircraft = flight_api_interface.get_data_from_api()
 
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+# printing the flight data to console
+testAircraft.print_aircraft()
