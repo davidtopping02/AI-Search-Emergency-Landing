@@ -2,6 +2,7 @@ from apiInterfaces import *
 from aviationDataStructures import *
 from utils import *
 import sys
+import math
 from collections import deque
 
 """
@@ -42,11 +43,33 @@ class Problem:
         # list of all the possible actions
         return possible_actions
 
+    # offsets the given lat and long (from state) by 20 miles in the direction of the action
     def result(self, state, action):
-        """Return the state that results from executing the given
-        action in the given state. The action must be one of
-        self.actions(state)."""
-        raise NotImplementedError
+
+        # radius of the earth
+        r_earth = 6378
+
+        # move the coordinates forward 20 miles in the given direction
+        if action == 'N':
+            new_latitude = state.latitude + (dy / r_earth) * (180 / math.pi);
+            new_longitude = state.longitude + (dx / r_earth) * (180 / math.pi) /  math.cos(state.latitude * math.pi / 180);
+
+        # if action == 'NE':
+        #     # TODO: add code
+        # if action == 'E':
+        #     # TODO: add code
+        # if action == 'SE':
+        #     # TODO: add code
+        # if action == 'S':
+        #     # TODO: add code
+        # if  action == 'SW':
+        #     # TODO: add code
+        # if action == 'W':
+        #     # TODO: add code
+        # if action == 'NW':
+        #     # TODO: add code
+
+
 
     def goal_test(self, state):
         """Return True if the state is a goal. The default method compares the
@@ -141,7 +164,7 @@ class EmergencyLandingProblem:
     def __init__(self, the_aircraft=None):
         self.state = the_aircraft
         self.seq = []
-        # self.state.print_aircraft()
+        self.state.print_aircraft()
 
     def __call__(self, percept):
         """[Figure 3.1] Formulate a goal and problem, then

@@ -2,7 +2,7 @@ from apiInterfaces import *
 from aviationDataStructures import *
 from searchDataStructures import *
 
-the_aircraft = Aircraft('DP6531')
+the_aircraft = Aircraft('JL67')
 flight_api_interface = FlightApi(the_aircraft)
 the_aircraft = flight_api_interface.get_data_from_api()
 

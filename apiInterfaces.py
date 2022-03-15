@@ -44,7 +44,10 @@ class FlightApi:
         self.current_aircraft.longitude = api_response['response'][0]['lng']
         self.current_aircraft.current_speed = api_response['response'][0]['speed']
         self.current_aircraft.altitude = api_response['response'][0]['alt']
+        self.current_aircraft.dir = api_response['response'][0]['dir']
+        self.current_aircraft.calc_direction()
+
 
         # prints entire contents of json call
-        print(json.dumps(api_response, indent=4, sort_keys=True))
+        # print(json.dumps(api_response, indent=4, sort_keys=True))
         return self.current_aircraft
