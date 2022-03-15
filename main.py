@@ -1,16 +1,12 @@
-# This is a sample Python script.
+from apiInterfaces import *
+from aviationDataStructures import *
+from searchDataStructures import *
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+the_aircraft = Aircraft('DP6531')
+flight_api_interface = FlightApi(the_aircraft)
+the_aircraft = flight_api_interface.get_data_from_api()
 
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+if the_aircraft is not None:
+    emergency_landing = EmergencyLandingProblem(the_aircraft)
+else:
+    print("error retrieving aircraft data")
