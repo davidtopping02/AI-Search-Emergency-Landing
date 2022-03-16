@@ -20,25 +20,33 @@ class Problem:
 
     # returns a list of all possible actions from the current state
     def actions(self, state):
+
         possible_actions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
 
-        # # logic here to work out if an action is possible
-        # if
-        #     possible_actions.remove('N')
-        # if
-        #     possible_actions.remove('NE')
-        # if
-        #     possible_actions.remove('E')
-        # if
-        #     possible_actions.remove('SE')
-        # if
-        #     possible_actions.remove('S')
-        # if
-        #     possible_actions.remove('SW')
-        # if
-        #     possible_actions.remove('W')
-        # if
-        #     possible_actions.remove('NW')
+        # logic here to work out if an action is possible
+        if state.dir_compass != 'NW' or state.dir_compass != 'N' or state.dir_compass != 'NE':
+            possible_actions.remove('N')
+
+        if state.dir_compass != 'N' or state.dir_compass != 'NE' or state.dir_compass != 'E':
+            possible_actions.remove('NE')
+
+        if state.dir_compass != 'NE' or state.dir_compass != 'E' or state.dir_compass != 'SE':
+            possible_actions.remove('E')
+
+        if state.dir_compass != 'E' or state.dir_compass != 'SE' or state.dir_compass != 'S':
+            possible_actions.remove('SE')#
+
+        if state.dir_compass != 'N' or state.dir_compass != 'NE' or state.dir_compass != 'E':
+            possible_actions.remove('S')
+
+        if state.dir_compass != 'S' or state.dir_compass != 'SW' or state.dir_compass != 'W':
+            possible_actions.remove('SW')
+
+        if state.dir_compass != 'SW' or state.dir_compass != 'W' or state.dir_compass != 'NW':
+            possible_actions.remove('W')
+
+        if state.dir_compass != 'W' or state.dir_compass != 'NW' or state.dir_compass != 'N':
+            possible_actions.remove('NW')
 
         # list of all the possible actions
         return possible_actions
