@@ -1,12 +1,5 @@
-from apiInterfaces import *
-from aviationDataStructures import *
-from searchDataStructures import *
+from emergencyLanding import *
 
-the_aircraft = Aircraft('JL67')
-flight_api_interface = FlightApi(the_aircraft)
-the_aircraft = flight_api_interface.get_data_from_api()
+the_problem = EmergencyProblem()
+the_problem.run_problem('SV111')
 
-if the_aircraft is not None:
-    emergency_landing = EmergencyLandingProblem(the_aircraft)
-else:
-    print("error retrieving aircraft data")

@@ -1,5 +1,7 @@
 from aviationDataStructures import *
 import requests
+import airportsdata
+from amadeus import Client, ResponseError
 import json
 
 
@@ -13,8 +15,7 @@ class FlightApi:
     # Gets required data from api, stores it in local field and returns the local field
     def get_data_from_api(self):
 
-        print("getting flight data..."
-              "")
+        print("getting flight data...\n")
 
         # parameters for the api call
         params = {
@@ -47,7 +48,40 @@ class FlightApi:
         self.current_aircraft.dir = api_response['response'][0]['dir']
         self.current_aircraft.calc_direction()
 
-
         # prints entire contents of json call
         # print(json.dumps(api_response, indent=4, sort_keys=True))
         return self.current_aircraft
+
+
+class AirportApi:
+
+    # default cons
+    def __init__(self):
+        self.airports = []
+
+    def get_data_from_api(self, lat=None, long=None):
+
+        # parameters for the api call
+        amadeus = Client(
+            client_id='mOY4RkBAqfZVg6QNyYIh23NUkENb3IAF',
+            client_secret='8Oy9RqdTh0O3loQa'
+        )
+
+        # api call
+        try:
+            print("getting airport data... \n")
+
+            response = amadeus.reference_data.locations.airports.get(longitude=long, latitude=lat, radius=500)
+        except:
+            return None;
+
+        for x in range(len(response.data)):
+            new_airport = Airport(
+                response.data[x]["iataCode"],
+                response.data[x]["address"]["cityName"],
+                response.data[x]["geoCode"]["latitude"],
+                response.data[x]["geoCode"]["longitude"]
+            )
+            self.airports.append(new_airport)
+
+        return self.airports

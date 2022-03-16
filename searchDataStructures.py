@@ -20,74 +20,30 @@ class Problem:
 
     # returns a list of all possible actions from the current state
     def actions(self, state):
+        possible_actions = ['N', 'E', 'S', 'W']
 
-        possible_actions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
-
-        # logic here to work out if an action is possible
-        if state.dir_compass != 'NW' or state.dir_compass != 'N' or state.dir_compass != 'NE':
-            possible_actions.remove('N')
-
-        if state.dir_compass != 'N' or state.dir_compass != 'NE' or state.dir_compass != 'E':
-            possible_actions.remove('NE')
-
-        if state.dir_compass != 'NE' or state.dir_compass != 'E' or state.dir_compass != 'SE':
-            possible_actions.remove('E')
-
-        if state.dir_compass != 'E' or state.dir_compass != 'SE' or state.dir_compass != 'S':
-            possible_actions.remove('SE')#
-
-        if state.dir_compass != 'N' or state.dir_compass != 'NE' or state.dir_compass != 'E':
-            possible_actions.remove('S')
-
-        if state.dir_compass != 'S' or state.dir_compass != 'SW' or state.dir_compass != 'W':
-            possible_actions.remove('SW')
-
-        if state.dir_compass != 'SW' or state.dir_compass != 'W' or state.dir_compass != 'NW':
-            possible_actions.remove('W')
-
-        if state.dir_compass != 'W' or state.dir_compass != 'NW' or state.dir_compass != 'N':
-            possible_actions.remove('NW')
-
-        # list of all the possible actions
-        return possible_actions
-
-    # offsets the given lat and long (from state) by 20 miles in the direction of the action
     def result(self, state, action):
 
-        # radius of the earth
-        r_earth = 6378
+        # move the coordinates forward in the given direction
+        new_latitude = state.latitude
+        new_longitude = state.longitude
 
-        # move the coordinates forward 20 miles in the given direction
         if action == 'N':
-            new_latitude = state.latitude + (dy / r_earth) * (180 / math.pi);
-            new_longitude = state.longitude + (dx / r_earth) * (180 / math.pi) /  math.cos(state.latitude * math.pi / 180);
+            new_latitude = state.latitude + 4.50267
+        if action == 'E':
+            new_longitude = state.longitude + 5.690212
+        if action == 'S':
+            new_latitude = state.latitude + -4.50267
+        if action == 'W':
+            new_longitude = state.longitude + -5.690212
 
-        # if action == 'NE':
-        #     # TODO: add code
-        # if action == 'E':
-        #     # TODO: add code
-        # if action == 'SE':
-        #     # TODO: add code
-        # if action == 'S':
-        #     # TODO: add code
-        # if  action == 'SW':
-        #     # TODO: add code
-        # if action == 'W':
-        #     # TODO: add code
-        # if action == 'NW':
-        #     # TODO: add code
+        coordinates = [new_latitude, new_longitude]
+
+        return coordinates
 
 
-
-    def goal_test(self, state):
-        """Return True if the state is a goal. The default method compares the
-        state to self.goal or checks for state in self.goal if it is a
-        list, as specified in the constructor. Override this method if
-        checking against a single self.goal is not enough."""
-        if isinstance(self.goal, list):
-            return is_in(state, self.goal)
-        else:
-            return state == self.goal
+    # def goal_test(self, state):
+    #     # TODO implement code for this function
 
     def path_cost(self, c, state1, action, state2):
         """Return the cost of a solution path that arrives at state2 from
@@ -108,39 +64,37 @@ class Problem:
 
 class Node:
 
-    def __init__(self, state, parent=None, action=None, path_cost=0):
-        """Create a search tree Node, derived from a parent by an action."""
-        self.state = state
-        self.parent = parent
+    def __init__(self, coordinates, previous_location=None, action=None, distance_from_previous=0):
+        self.state = coordinates
+        self.parent = previous_location
         self.action = action
-        self.path_cost = path_cost
+        self.path_cost = distance_from_previous
         self.depth = 0
-        if parent:
-            self.depth = parent.depth + 1
+        if previous_location:
+            self.depth = previous_location.depth + 1
 
     def __repr__(self):
-        return "<Node {}>".format(self.state)
+
+        string_repr = 'Coordinates: ' + self.state + "\n" + 'Action: ' + self.action +  '\n' + 'Path cost: ' + self.path_cost + '\n' + 'Depth: ' + self.depth
+        return string_repr
+
 
     def __lt__(self, node):
-        return self.state < node.state
+        return self.path_cost < node.path_cost
 
     def expand(self, problem):
-        """List the nodes reachable in one step from this node."""
         return [self.child_node(problem, action)
                 for action in problem.actions(self.state)]
 
     def child_node(self, problem, action):
-        """[Figure 3.10]"""
         next_state = problem.result(self.state, action)
         next_node = Node(next_state, self, action, problem.path_cost(self.path_cost, self.state, action, next_state))
         return next_node
 
     def solution(self):
-        """Return the sequence of actions to go from the root to this node."""
         return [node.action for node in self.path()[1:]]
 
     def path(self):
-        """Return a list of nodes forming the path from the root to this node."""
         node, path_back = self, []
         while node:
             path_back.append(node)
@@ -151,7 +105,6 @@ class Node:
     # astar_search to have no duplicated states, so we treat nodes
     # with the same state as equal. [Problem: this may not be what you
     # want in other contexts.]
-
     def __eq__(self, other):
         return isinstance(other, Node) and self.state == other.state
 
