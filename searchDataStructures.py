@@ -179,7 +179,7 @@ def breadth_first_tree_search(problem):
     """
 
     frontier = deque([Node(problem.initial)])  # FIFO queue
-
+    print("running breadth-first search...")
     while frontier:
         node = frontier.popleft()
         if problem.goal_test(node.state):
@@ -187,23 +187,23 @@ def breadth_first_tree_search(problem):
         frontier.extend(node.expand(problem))
     return None
 
-# def depth_first_tree_search(problem):
-#     """
-#     [Figure 3.7]
-#     Search the deepest nodes in the search tree first.
-#     Search through the successors of a problem to find a goal.
-#     The argument frontier should be an empty queue.
-#     Repeats infinitely in case of loops.
-#     """
-#
-#     frontier = [Node(problem.initial)]  # Stack
-#
-#     while frontier:
-#         node = frontier.pop()
-#         if problem.goal_test(node.state):
-#             return node
-#         frontier.extend(node.expand(problem))
-#     return None
+def depth_first_tree_search(problem):
+    """
+    [Figure 3.7]
+    Search the deepest nodes in the search tree first.
+    Search through the successors of a problem to find a goal.
+    The argument frontier should be an empty queue.
+    Repeats infinitely in case of loops.
+    """
+
+    frontier = [Node(problem.initial)]  # Stack
+    print("running depth-first search")
+    while frontier:
+        node = frontier.pop()
+        if problem.goal_test(node.state):
+            return node
+        frontier.extend(node.expand(problem))
+    return None
 #
 #
 # def depth_first_graph_search(problem):
@@ -228,26 +228,26 @@ def breadth_first_tree_search(problem):
 #     return None
 #
 #
-# def breadth_first_graph_search(problem):
-#     """[Figure 3.11]
-#     Note that this function can be implemented in a
-#     single line as below:
-#     return graph_search(problem, FIFOQueue())
-#     """
-#     node = Node(problem.initial)
-#     if problem.goal_test(node.state):
-#         return node
-#     frontier = deque([node])
-#     explored = set()
-#     while frontier:
-#         node = frontier.popleft()
-#         explored.add(node.state)
-#         for child in node.expand(problem):
-#             if child.state not in explored and child not in frontier:
-#                 if problem.goal_test(child.state):
-#                     return child
-#                 frontier.append(child)
-#     return None
+def breadth_first_graph_search(problem):
+    """[Figure 3.11]
+    Note that this function can be implemented in a
+    single line as below:
+    return graph_search(problem, FIFOQueue())
+    """
+    node = Node(problem.initial)
+    if problem.goal_test(node.state):
+        return node
+    frontier = deque([node])
+    explored = set()
+    while frontier:
+        node = frontier.popleft()
+        explored.add(node.state)
+        for child in node.expand(problem):
+            if child.state not in explored and child not in frontier:
+                if problem.goal_test(child.state):
+                    return child
+                frontier.append(child)
+    return None
 #
 #
 # def best_first_graph_search(problem, f, display=False):
