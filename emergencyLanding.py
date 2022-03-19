@@ -2,16 +2,9 @@ from apiInterfaces import *
 from aviationDataStructures import *
 from searchDataStructures import *
 
-global coords
-coords = ''
 
-def getCoords():
-    return coords
-
-def problem_search():
-
+def problem_search(flight_number=None):
     data_retrieval = EmergencyProblem()
-    flight_number = input("Aircraft flight number: ")
     data_retrieval.run_problem(flight_number)
 
     if len(data_retrieval.airports) == 0:
@@ -23,9 +16,11 @@ def problem_search():
         Node = breadth_first_tree_search(the_problem)
         # Node = depth_first_tree_search(the_problem)
         # Node = breadth_first_graph_search(the_problem)
-        coords = str(Node.state)
-        print("\nCoordinates of closest airport: " + coords)
+        coords = [the_problem.initial, Node.state]
+        print("\nCoordinates of closest airport: " + str(Node.state))
         print("stop")
+
+        return coords
 
 
 class EmergencyProblem:
@@ -34,8 +29,7 @@ class EmergencyProblem:
         self.aircraft = aircraft
         self.airports = airports
 
-
-    def run_problem(self,flight_number=None):
+    def run_problem(self, flight_number=None):
         self.get_aircraft_data(flight_number)
         self.get_airports()
         self.print_aircraft_airport()
@@ -77,4 +71,3 @@ class EmergencyProblem:
 
         for x in range(len(self.airports)):
             self.airports[x].print_airport()
-

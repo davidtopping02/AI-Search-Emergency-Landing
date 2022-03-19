@@ -12,7 +12,6 @@ Inspired by the book: 'Artificial Intelligence: A Modern Approach'
 search_rad = 1
 
 class Problem:
-
     # initialises the problem, initial is the location of the airport, goal is a list of airports within 100km
     def __init__(self, initial, goal=None):
         self.initial = initial
