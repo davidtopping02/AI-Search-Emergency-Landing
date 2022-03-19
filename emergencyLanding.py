@@ -17,7 +17,6 @@ def problem_search(flight_number=None):
 
         Node = breadth_first_tree_search(the_problem)
 
-        coords = [the_problem.initial, Node.state, Node2.state Node3.state]
 
         print("\nCoordinates of closest airport(BFS): " + str(Node.state))
         print("Distance:" + str(distance_between_coordinates(aircraft_location, Node.state)))
@@ -31,7 +30,11 @@ def problem_search(flight_number=None):
         print("\nCoordinates of closest airport(IDS): " + str(Node3.state))
         print("Distance:" + str(distance_between_coordinates(aircraft_location, Node3.state)))
         print("stop")
-        
+
+
+        coords = [the_problem.initial, Node.state, Node2.state, Node3.state]
+
+        # formatting of coords[[lat_of_plane, long_of_plane], [lat_of_bfs, long_of_bfs], [lat_of_dfs, long_of_dfs], [lat_of_ids, long_of_ids]]
         return coords
 
 class EmergencyProblem:
