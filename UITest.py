@@ -17,10 +17,19 @@ class MainPage(QMainWindow):
         #setting up window size/title
         self.setWindowTitle('Plane Select')
         self.window_width, self.window_height = 400, 300
+        self.setFixedSize(400,300)
         self.setMinimumSize(self.window_width, self.window_height)
 
         #global style sheet (sorry for comic sans)
-        self.setStyleSheet("font: 14pt Comic Sans MS")
+        self.setStyleSheet("font: 14pt Comic Sans MS; ")
+
+        #setting the background to a gradient (taken from https://wiki.python.org/moin/PyQt/Windows%20with%20gradient%20backgrounds)
+        p = QPalette()
+        gradient = QLinearGradient(0, 0, 0, 400)
+        gradient.setColorAt(0.0, QColor(0, 255, 255))
+        gradient.setColorAt(1.0, QColor(255, 255, 255))
+        p.setBrush(QPalette.Window, QBrush(gradient))
+        self.setPalette(p)
 
         #adding label
         self.l1 = QLabel("Enter the flight number below", self)
