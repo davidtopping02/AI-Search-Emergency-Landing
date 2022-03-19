@@ -12,19 +12,6 @@ import sys
 import io
 import folium
 
-def button_pressed(flight_num = None, main_page=None):
-
-    if flight_num is not None:
-        coords = problem_search(flight_num)
-
-        if main_page.m is None:
-            main_page.m = mapApp(coords)
-        main_page.m.show()
-
-    else:
-        print("error with flight num")
-
-
 class MainPage(QMainWindow):
 
     def __init__(self):
@@ -39,8 +26,8 @@ class MainPage(QMainWindow):
         #setting icon
         self.setWindowIcon(QtGui.QIcon('icon.png'))
 
-        #global style sheet (sorry for comic sans)
-        self.setStyleSheet("font: 14pt Comic Sans MS; ")
+        #global style sheet 
+        self.setStyleSheet("font: 14pt Arial; ")
 
         #setting the background to a gradient (taken from https://wiki.python.org/moin/PyQt/Windows%20with%20gradient%20backgrounds)
         p = QPalette()
@@ -68,10 +55,19 @@ class MainPage(QMainWindow):
         self.button.resize(140,40)
         self.button.move(120,180)
 
+        self.button.clicked.connect(self.button_pressed)
 
+    def button_pressed(self):
 
-        #
-        self.button.clicked.connect(button_pressed(self.textbox.text(), self))
+            if self.textbox.text() is not None:
+                coords = problem_search(self.textbox.text())
+
+            if self.m is None:
+                self.m = mapApp(coords)
+                self.m.show()
+
+            else:
+                print("error with flight num")
 
 
 class mapApp(QWidget):
@@ -126,3 +122,5 @@ def runGUI():
     myApp.show()
 
     sys.exit(app.exec_())
+
+runGUI()
