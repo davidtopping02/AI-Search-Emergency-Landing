@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QApplication, QLineEdit
 from PyQt5.QtWidgets import QLabel, QHBoxLayout, QVBoxLayout, QMainWindow, QPushButton
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import *
 
 class MainPage(QMainWindow):
@@ -19,6 +19,9 @@ class MainPage(QMainWindow):
         self.window_width, self.window_height = 400, 300
         self.setFixedSize(400,300)
         self.setMinimumSize(self.window_width, self.window_height)
+
+        #setting icon
+        self.setWindowIcon(QtGui.QIcon('icon.png'))
 
         #global style sheet (sorry for comic sans)
         self.setStyleSheet("font: 14pt Comic Sans MS; ")
