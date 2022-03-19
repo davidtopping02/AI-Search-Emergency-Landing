@@ -2,6 +2,7 @@ from apiInterfaces import *
 from aviationDataStructures import *
 from searchDataStructures import *
 
+
 def problem_search():
 
     data_retrieval = EmergencyProblem()
@@ -14,13 +15,22 @@ def problem_search():
     else:
         the_problem = Problem([data_retrieval.aircraft.latitude, data_retrieval.aircraft.longitude],
                               data_retrieval.airports)
+
+        aircraft_location = (data_retrieval.aircraft.latitude, data_retrieval.aircraft.longitude)
+
         Node = breadth_first_tree_search(the_problem)
-        # Node = depth_first_tree_search(the_problem)
-        # Node = breadth_first_graph_search(the_problem)
+        print("\nCoordinates of closest airport(BFS): " + str(Node.state))
+        print("Distance:" + str(distance_between_coordinates(aircraft_location, Node.state)))
+    
 
-        print("\nCoordinates of closest airport: " + str(Node.state))
+        Node2 = depth_limited_search(the_problem)
+        print("\nCoordinates of closest airport(DFS): " + str(Node2.state))
+        print("Distance:" + str(distance_between_coordinates(aircraft_location, Node2.state)))
+
+        Node3 = iterative_deepening_search(the_problem)
+        print("\nCoordinates of closest airport(IDS): " + str(Node3.state))
+        print("Distance:" + str(distance_between_coordinates(aircraft_location, Node3.state)))
         print("stop")
-
 
 class EmergencyProblem:
 
