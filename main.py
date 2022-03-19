@@ -1,5 +1,7 @@
+from PyQt5.QtWidgets import QApplication
 from emergencyLanding import *
+from GUI import *
 
-the_problem = EmergencyProblem()
-the_problem.run_problem('SV111')
+# problem_search()
 
+runGUI()

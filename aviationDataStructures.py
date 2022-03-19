@@ -27,7 +27,7 @@ class Aircraft:
             print("Latitude: " + str(self.latitude))
             print("Current Speed: " + str(self.current_speed))
             print("Direction (degrees): " + str(self.dir))
-            print("Direction (compass): " + str(self.dir_compass))
+            print("Direction (compass): " + str(self.dir_compass)  + "\n")
         else:
             return
 
@@ -56,19 +56,19 @@ class Aircraft:
 
 class Airport:
 
-    def __init__(self, airport_name=None, airport_city=None, latitude=None, longitude=None):
+    def __init__(self, airport_name=None, airport_city=None, latitude=None, longitude=None, coordinates=None):
         self.airport_name = airport_name
         self.airport_city = airport_city
         self.airport_lat = latitude
         self.airport_long = longitude
+        self.airport_coordinates = coordinates
 
 
     def print_airport(self):
-        print(self.airport_name)
+        print("\n" + self.airport_name)
         print(self.airport_city)
         print(str(self.airport_lat))
         print(str(self.airport_long))
-        print("\n")
 
 
 def distance_between_coordinates(startPoint, endPoint):

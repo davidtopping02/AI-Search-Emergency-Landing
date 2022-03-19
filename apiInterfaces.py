@@ -80,7 +80,8 @@ class AirportApi:
                 response.data[x]["iataCode"],
                 response.data[x]["address"]["cityName"],
                 response.data[x]["geoCode"]["latitude"],
-                response.data[x]["geoCode"]["longitude"]
+                response.data[x]["geoCode"]["longitude"],
+                [response.data[x]["geoCode"]["latitude"], response.data[x]["geoCode"]["longitude"]]
             )
             self.airports.append(new_airport)
 

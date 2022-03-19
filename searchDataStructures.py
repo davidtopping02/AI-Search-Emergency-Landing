@@ -9,61 +9,102 @@ from collections import deque
 The template for this file was taken from: dmeol, https://github.com/aimacode/aima-python/blob/master/search.py
 Inspired by the book: 'Artificial Intelligence: A Modern Approach'
 """
-
+search_rad = 1
 
 class Problem:
-
-    # initialises the problem
+    # initialises the problem, initial is the location of the airport, goal is a list of airports within 100km
     def __init__(self, initial, goal=None):
         self.initial = initial
         self.goal = goal
 
-    # returns a list of all possible actions from the current state
-    def actions(self, state):
+    # returns a list of all possible actions from the current state (all directions on a compass)
+    def actions(self, action):
+
         possible_actions = ['N', 'E', 'S', 'W']
 
-    def result(self, state, action):
+        if action == 'N':
+            possible_actions.remove('S')
+        elif action == 'S':
+            possible_actions.remove('N')
+        elif action == 'E':
+            possible_actions = ['E']
+        elif action == 'W':
+            possible_actions = ['W']
 
-        # move the coordinates forward in the given direction
-        new_latitude = state.latitude
-        new_longitude = state.longitude
+        return possible_actions
+
+    # Shifts the current location by 100km in direction of the action
+
+    def result(self, state, action):
+        new_latitude = state[0]
+        new_longitude = state[1]
+        rad_earth = 6371
+        rad_search = search_rad
 
         if action == 'N':
-            new_latitude = state.latitude + 4.50267
-        if action == 'E':
-            new_longitude = state.longitude + 5.690212
-        if action == 'S':
-            new_latitude = state.latitude + -4.50267
-        if action == 'W':
-            new_longitude = state.longitude + -5.690212
+            # Coordinate offsets in radians
+            dLat = rad_search / rad_earth
 
-        coordinates = [new_latitude, new_longitude]
+            # OffsetPosition, decimal degrees
+            new_latitude = state[0] + dLat * 180 / math.pi
+
+            coordinates = [new_latitude, new_longitude]
+
+        if action == 'S':
+            # Coordinate offsets in radians
+            dLat = rad_search / rad_earth
+
+            # OffsetPosition, decimal degrees
+            new_latitude = state[0] - dLat * 180 / math.pi
+
+            coordinates = [new_latitude, new_longitude]
+
+        if action == 'E':
+            # Coordinate offsets in radians
+            dLon = rad_search / (rad_earth * math.cos(math.pi * state[0] / 180))
+
+            # OffsetPosition, decimal degrees
+            new_longitude = state[1] + dLon * 180 / math.pi
+
+            coordinates = [new_latitude, new_longitude]
+
+        if action == 'W':
+            # Coordinate offsets in radians
+            dLon = rad_search / (rad_earth * math.cos(math.pi * state[0] / 180))
+
+            # OffsetPosition, decimal degrees
+            new_longitude = state[1] - dLon * 180 / math.pi
+
+            coordinates = [new_latitude, new_longitude]
 
         return coordinates
 
+    # checks to see if there is an airport within 100km of the current location(state)
+    def goal_test(self, state):
 
-    # def goal_test(self, state):
-    #     # TODO implement code for this function
+        # looping throug list of airports
+        for x in range(len(self.goal)):
+            if distance_between_coordinates(state, self.goal[x].airport_coordinates) <= search_rad:
+                return True
+            elif x < len(self.goal):
+                continue
+            else:
+                return False
 
-    def path_cost(self, c, state1, action, state2):
-        """Return the cost of a solution path that arrives at state2 from
-        state1 via action, assuming cost c to get up to state1. If the problem
-        is such that the path doesn't matter, this function will only look at
-        state2. If the path does matter, it will consider c and maybe state1
-        and action. The default method costs 1 for every step in the path."""
-        return c + 1
+    def path_cost(self, c, state1, state2):
+        c = c + distance_between_coordinates(state1, state2)
+        return c
 
-    def value(self, state):
-        """For optimization problems, each state has a value. Hill Climbing
-        and related algorithms try to maximize this value."""
-        raise NotImplementedError
+    # def value(self, state):
+    #     """For optimization problems, each state has a value. Hill Climbing
+    #     and related algorithms try to maximize this value."""
+    #     raise NotImplementedError
 
 
 # ______________________________________________________________________________
 
 
 class Node:
-
     def __init__(self, coordinates, previous_location=None, action=None, distance_from_previous=0):
         self.state = coordinates
         self.parent = previous_location
@@ -74,21 +115,28 @@ class Node:
             self.depth = previous_location.depth + 1
 
     def __repr__(self):
-
-        string_repr = 'Coordinates: ' + self.state + "\n" + 'Action: ' + self.action +  '\n' + 'Path cost: ' + self.path_cost + '\n' + 'Depth: ' + self.depth
-        return string_repr
-
+        return "<Node {}>".format(self.state)
 
     def __lt__(self, node):
         return self.path_cost < node.path_cost
 
     def expand(self, problem):
-        return [self.child_node(problem, action)
-                for action in problem.actions(self.state)]
+
+        if self.state[0] == problem.initial[0] and self.state[1] == problem.initial[1]:
+            possible_actions = ['N', 'E', 'S', 'W']
+        else:
+            possible_actions = problem.actions(self.action)
+
+        child_nodes = []
+
+        for x in range(len(possible_actions)):
+            child_nodes.append(self.child_node(problem, possible_actions[x]))
+
+        return child_nodes
 
     def child_node(self, problem, action):
         next_state = problem.result(self.state, action)
-        next_node = Node(next_state, self, action, problem.path_cost(self.path_cost, self.state, action, next_state))
+        next_node = Node(next_state, self, action, problem.path_cost(self.path_cost, self.state, next_state))
         return next_node
 
     def solution(self):
@@ -116,85 +164,48 @@ class Node:
         return hash(self.state)
 
 
-# ______________________________________________________________________________
-
-
-class EmergencyLandingProblem:
-
-    # constructor setting the initial state to be the found aircraft
-    def __init__(self, the_aircraft=None):
-        self.state = the_aircraft
-        self.seq = []
-        self.state.print_aircraft()
-
-    def __call__(self, percept):
-        """[Figure 3.1] Formulate a goal and problem, then
-        search for a sequence of actions to solve it."""
-        self.state = self.update_state(self.state, percept)
-        if not self.seq:
-            goal = self.formulate_goal(self.state)
-            problem = self.formulate_problem(self.state, goal)
-            self.seq = self.search(problem)
-            if not self.seq:
-                return None
-        return self.seq.pop(0)
-
-    def update_state(self, state, percept):
-        raise NotImplementedError
-
-    def formulate_goal(self, state):
-        raise NotImplementedError
-
-    def formulate_problem(self, state, goal):
-        raise NotImplementedError
-
-    def search(self, problem):
-        raise NotImplementedError
-
-
 # # ______________________________________________________________________________
 # # Uninformed Search algorithms
 #
 #
-# def breadth_first_tree_search(problem):
-#     """
-#     [Figure 3.7]
-#     Search the shallowest nodes in the search tree first.
-#     Search through the successors of a problem to find a goal.
-#     The argument frontier should be an empty queue.
-#     Repeats infinitely in case of loops.
-#     """
-#
-#     frontier = deque([Node(problem.initial)])  # FIFO queue
-#
-#     while frontier:
-#         node = frontier.popleft()
-#         if problem.goal_test(node.state):
-#             return node
-#         frontier.extend(node.expand(problem))
-#     return None
-#
-#
-# def depth_first_tree_search(problem):
-#     """
-#     [Figure 3.7]
-#     Search the deepest nodes in the search tree first.
-#     Search through the successors of a problem to find a goal.
-#     The argument frontier should be an empty queue.
-#     Repeats infinitely in case of loops.
-#     """
-#
-#     frontier = [Node(problem.initial)]  # Stack
-#
-#     while frontier:
-#         node = frontier.pop()
-#         if problem.goal_test(node.state):
-#             return node
-#         frontier.extend(node.expand(problem))
-#     return None
-#
-#
-# def depth_first_graph_search(problem):
+def breadth_first_tree_search(problem):
+    """
+    [Figure 3.7]
+    Search the shallowest nodes in the search tree first.
+    Search through the successors of a problem to find a goal.
+    The argument frontier should be an empty queue.
+    Repeats infinitely in case of loops.
+    """
+
+    frontier = deque([Node(problem.initial)])  # FIFO queue
+    print("running breadth-first search...")
+    while frontier:
+        node = frontier.popleft()
+        if problem.goal_test(node.state):
+            return node
+        frontier.extend(node.expand(problem))
+    return None
+
+def depth_first_tree_search(problem):
+    """
+    [Figure 3.7]
+    Search the deepest nodes in the search tree first.
+    Search through the successors of a problem to find a goal.
+    The argument frontier should be an empty queue.
+    Repeats infinitely in case of loops.
+    """
+
+    frontier = [Node(problem.initial)]  # Stack
+    print("running depth-first search")
+    while frontier:
+        node = frontier.pop()
+        if problem.goal_test(node.state):
+            return node
+        frontier.extend(node.expand(problem))
+    return None
+
+
+def depth_first_graph_search(problem):
 #     """
 #     [Figure 3.7]
 #     Search the deepest nodes in the search tree first.
@@ -216,92 +227,56 @@ class EmergencyLandingProblem:
 #     return None
 #
 #
-# def breadth_first_graph_search(problem):
-#     """[Figure 3.11]
-#     Note that this function can be implemented in a
-#     single line as below:
-#     return graph_search(problem, FIFOQueue())
-#     """
-#     node = Node(problem.initial)
-#     if problem.goal_test(node.state):
-#         return node
-#     frontier = deque([node])
-#     explored = set()
-#     while frontier:
-#         node = frontier.popleft()
-#         explored.add(node.state)
-#         for child in node.expand(problem):
-#             if child.state not in explored and child not in frontier:
-#                 if problem.goal_test(child.state):
-#                     return child
-#                 frontier.append(child)
-#     return None
-#
-#
-# def best_first_graph_search(problem, f, display=False):
-#     """Search the nodes with the lowest f scores first.
-#     You specify the function f(node) that you want to minimize; for example,
-#     if f is a heuristic estimate to the goal, then we have greedy best
-#     first search; if f is node.depth then we have breadth-first search.
-#     There is a subtlety: the line "f = memoize(f, 'f')" means that the f
-#     values will be cached on the nodes as they are computed. So after doing
-#     a best first search you can examine the f values of the path returned."""
-#     f = memoize(f, 'f')
-#     node = Node(problem.initial)
-#     frontier = PriorityQueue('min', f)
-#     frontier.append(node)
-#     explored = set()
-#     while frontier:
-#         node = frontier.pop()
-#         if problem.goal_test(node.state):
-#             if display:
-#                 print(len(explored), "paths have been expanded and", len(frontier), "paths remain in the frontier")
-#             return node
-#         explored.add(node.state)
-#         for child in node.expand(problem):
-#             if child.state not in explored and child not in frontier:
-#                 frontier.append(child)
-#             elif child in frontier:
-#                 if f(child) < frontier[child]:
-#                     del frontier[child]
-#                     frontier.append(child)
-#     return None
-#
-#
-# def uniform_cost_search(problem, display=False):
-#     """[Figure 3.14]"""
-#     return best_first_graph_search(problem, lambda node: node.path_cost, display)
-#
-#
-# def depth_limited_search(problem, limit=50):
+ def breadth_first_graph_search(problem):
+    """[Figure 3.11]
+    Note that this function can be implemented in a
+    single line as below:
+    return graph_search(problem, FIFOQueue())
+    """
+    node = Node(problem.initial)
+    if problem.goal_test(node.state):
+        return node
+    frontier = deque([node])
+    explored = set()
+    while frontier:
+        node = frontier.popleft()
+        explored.add(node.state)
+        for child in node.expand(problem):
+            if child.state not in explored and child not in frontier:
+                if problem.goal_test(child.state):
+                    return child
+                frontier.append(child)
+    return None
+
+def depth_limited_search(problem, limit=500):
 #     """[Figure 3.17]"""
 #
-#     def recursive_dls(node, problem, limit):
-#         if problem.goal_test(node.state):
-#             return node
-#         elif limit == 0:
-#             return 'cutoff'
-#         else:
-#             cutoff_occurred = False
-#             for child in node.expand(problem):
-#                 result = recursive_dls(child, problem, limit - 1)
-#                 if result == 'cutoff':
-#                     cutoff_occurred = True
-#                 elif result is not None:
-#                     return result
-#             return 'cutoff' if cutoff_occurred else None
-#
-#     # Body of depth_limited_search:
-#     return recursive_dls(Node(problem.initial), problem, limit)
-#
-#
-# def iterative_deepening_search(problem):
-#     """[Figure 3.18]"""
-#     for depth in range(sys.maxsize):
-#         result = depth_limited_search(problem, depth)
-#         if result != 'cutoff':
-#             return result
-#
+     def recursive_dls(node, problem, limit):
+         if problem.goal_test(node.state):
+             return node
+         elif limit == 0:
+             return 'cutoff'
+         else:
+             cutoff_occurred = False
+             for child in node.expand(problem):
+                 result = recursive_dls(child, problem, limit - 1)
+                 if result == 'cutoff':
+                     cutoff_occurred = True
+                 elif result is not None:
+                     return result
+             return 'cutoff' if cutoff_occurred else None
+
+     # Body of depth_limited_search:
+     return recursive_dls(Node(problem.initial), problem, limit)
+
+
+def iterative_deepening_search(problem):
+     """[Figure 3.18]"""
+     for depth in range(sys.maxsize):
+         result = depth_limited_search(problem, depth)
+         if result != 'cutoff':
+             return result
+
 #
 # # ______________________________________________________________________________
 # # Bidirectional Search
